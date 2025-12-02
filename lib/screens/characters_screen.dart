@@ -12,7 +12,7 @@ class CharactersScreen extends StatelessWidget {
     // final characters = context.watch<CharactersProvider>().items;
     //
     // De momento, hacemos una lista dummy vacía:
-    final List<Characters> characters = [];
+    final List<Personaje> characters = [];
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +41,7 @@ class CharactersScreen extends StatelessWidget {
 }
 
 class _CharacterCard extends StatelessWidget {
-  final Item character;
+  final Personaje character;
 
   const _CharacterCard({Key? key, required this.character}) : super(key: key);
 
