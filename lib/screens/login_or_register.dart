@@ -34,13 +34,13 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
 
     //Descomentar las siguientes lineas para generar un efecto de "respiracion"
-    /*animation.addStatusListener((status) {
+    animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         controller.reverse();
       } else if (status == AnimationStatus.dismissed) {
         controller.forward();
       }
-    });*/
+    });
     controller.forward();
   }
 
@@ -138,6 +138,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                 ),
                 TextFormField(
                   initialValue: '',
+                  obscureText: true,
                   validator: (text) {
                     if (text!.length == 0) {
                       return "Contrasenya és obligatori";
@@ -159,17 +160,6 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                   ),
                   onSaved: (text) => _passwd = text,
                 ),
-                isLogin
-                    ? CheckboxListTile(
-                        value: _isChecked,
-                        onChanged: (value) {
-                          _isChecked = value!;
-                          setState(() {});
-                        },
-                        title: Text('Recorda\'m'),
-                        controlAffinity: ListTileControlAffinity.leading,
-                      )
-                    : SizedBox(height: 56),
                 IconButton(
                   onPressed: () => _loginRegisterRequest(),
                   icon: Icon(
@@ -194,7 +184,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
         _isLoading = true;
       });
       // Aquí es realitzaria la petició de login a l'API o similar
-      missatge = 'Gràcies \n $_correu \n $_passwd';
+      missatge = 'Gràcies \n $_correu';
       setState(() {
         _isLoading = false;
       });
