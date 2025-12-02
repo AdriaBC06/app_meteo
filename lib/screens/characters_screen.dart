@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/characters.dart'; // ajusta la ruta si tu modelo está en otra carpeta
+import '../model/character.dart'; // ajusta la ruta si tu modelo está en otra carpeta
 
 class CharactersScreen extends StatelessWidget {
   const CharactersScreen({Key? key}) : super(key: key);
@@ -12,7 +12,7 @@ class CharactersScreen extends StatelessWidget {
     // final characters = context.watch<CharactersProvider>().items;
     //
     // De momento, hacemos una lista dummy vacía:
-    final List<Item> characters = [];
+    final List<Characters> characters = [];
 
     return Scaffold(
       appBar: AppBar(
