@@ -8,21 +8,21 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Dragon Ball API',
+      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // Pantalla inicial: login / registro
-      initialRoute: 'logOrReg',
       routes: {
         '/': (context) => const HomeScreen(),
-        'logOrReg': (context) => const LoginOrRegisterScreen(),
+        'logOrReg': (context) => LoginOrRegisterScreen(),
+        'personaje': (context) => const PersonajeScreen(),
+        'planeta': (context) => const PlanetaScreen(),
       },
+      initialRoute: 'logOrReg',
     );
   }
 }
