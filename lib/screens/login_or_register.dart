@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginOrRegisterScreen extends StatefulWidget {
+  const LoginOrRegisterScreen({Key? key}) : super(key: key);
+
   @override
   _LoginOrRegisterScreenState createState() => _LoginOrRegisterScreenState();
 }
@@ -9,23 +11,25 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> animation;
-  GlobalKey<FormState> _key = GlobalKey();
+  final GlobalKey<FormState> _key = GlobalKey();
 
   bool isLogin = false;
   bool isRegister = false;
-  late List<bool> _selectedEvent = [isLogin, isRegister];
+  // Empieza con ambos en false, ya se actualizarán al tocar los ToggleButtons.
+  List<bool> _selectedEvent = [false, false];
 
   RegExp emailRegExp =
-      new RegExp(r'^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$');
-  RegExp contRegExp = new RegExp(r'^([1-zA-Z0-1@.\s]{1,255})$');
+      RegExp(r'^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$');
+  RegExp contRegExp = RegExp(r'^([1-zA-Z0-1@.\s]{1,255})$');
   String? _correu;
   String? _passwd;
   String missatge = '';
-  bool _isChecked = false;
+  bool _isChecked = false; // (por si lo usas después para “recordar sesión”)
 
   bool _isLoading = false;
 
-  initState() {
+  @override
+  void initState() {
     super.initState();
     controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
@@ -33,7 +37,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
     );
     animation = CurvedAnimation(parent: controller, curve: Curves.easeIn);
 
-    //Descomentar las siguientes lineas para generar un efecto de "respiracion"
+    // "Respiración" del logo
     animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         controller.reverse();
@@ -45,7 +49,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
   }
 
   @override
-  dispose() {
+  void dispose() {
     // Es important SEMPRE realitzar el dispose del controller.
     controller.dispose();
     super.dispose();
@@ -55,17 +59,19 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: 200,
-              child: AnimatedLogo(animation: animation),
-            ),
-            if (isLogin || isRegister) loginOrRegisterForm(),
-            SizedBox(height: 100),
-            loginOrRegister()
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: 200,
+                child: AnimatedLogo(animation: animation),
+              ),
+              if (isLogin || isRegister) loginOrRegisterForm(),
+              const SizedBox(height: 100),
+              loginOrRegister(),
+            ],
+          ),
         ),
       ),
     );
@@ -76,7 +82,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
       direction: Axis.horizontal,
       onPressed: (int index) {
         setState(() {
-          // The botó que està seleccionat esta a true, tots els altres a false
+          // El botón seleccionado a true, el resto a false
           for (int i = 0; i < _selectedEvent.length; i++) {
             _selectedEvent[i] = i == index;
           }
@@ -108,7 +114,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(isLogin ? 'Inicia sessió' : 'Registra\'t'),
-        Container(
+        SizedBox(
           width: 300.0,
           child: Form(
             key: _key,
@@ -117,7 +123,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                 TextFormField(
                   initialValue: '',
                   validator: (text) {
-                    if (text!.length == 0) {
+                    if (text == null || text.isEmpty) {
                       return "Correu es obligatori";
                     } else if (!emailRegExp.hasMatch(text)) {
                       return "Format correu incorrecte";
@@ -131,8 +137,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                     hintText: 'Escrigui el seu correu',
                     labelText: 'Correu',
                     counterText: '',
-                    icon:
-                        Icon(Icons.email, size: 32.0, color: Colors.blue[800]),
+                    icon: Icon(Icons.email, size: 32.0, color: Colors.blue[800]),
                   ),
                   onSaved: (text) => _correu = text,
                 ),
@@ -140,7 +145,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                   initialValue: '',
                   obscureText: true,
                   validator: (text) {
-                    if (text!.length == 0) {
+                    if (text == null || text.isEmpty) {
                       return "Contrasenya és obligatori";
                     } else if (text.length <= 5) {
                       return "Contrasenya mínim de 5 caràcters";
@@ -168,7 +173,8 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                     color: Colors.blue[800],
                   ),
                 ),
-                _isLoading ? CircularProgressIndicator() : Container(),
+                const SizedBox(height: 8),
+                _isLoading ? const CircularProgressIndicator() : Container(),
               ],
             ),
           ),
@@ -177,7 +183,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
     );
   }
 
-  _loginRegisterRequest() async {
+  Future<void> _loginRegisterRequest() async {
     if (_key.currentState!.validate()) {
       _key.currentState!.save();
       setState(() {
@@ -188,6 +194,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
       setState(() {
         _isLoading = false;
       });
+      // Navega a la Home ('/') com tens definit en el MaterialApp
       Navigator.of(context).pushReplacementNamed('/', arguments: missatge);
     }
   }
@@ -198,18 +205,19 @@ class AnimatedLogo extends AnimatedWidget {
   static final _opacityTween = Tween<double>(begin: 0.1, end: 1.0);
   static final _sizeTween = Tween<double>(begin: 0.0, end: 100.0);
 
-  AnimatedLogo({Key? key, required Animation<double> animation})
+  const AnimatedLogo({Key? key, required Animation<double> animation})
       : super(key: key, listenable: animation);
 
+  @override
   Widget build(BuildContext context) {
     final Animation<double> animation = listenable as Animation<double>;
     return Opacity(
       opacity: _opacityTween.evaluate(animation),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10.0),
-        height: _sizeTween.evaluate(animation), // Aumenta la altura
-        width: _sizeTween.evaluate(animation), // Aumenta el ancho
-        child: FlutterLogo(),
+        margin: const EdgeInsets.symmetric(vertical: 10.0),
+        height: _sizeTween.evaluate(animation),
+        width: _sizeTween.evaluate(animation),
+        child: const FlutterLogo(),
       ),
     );
   }
