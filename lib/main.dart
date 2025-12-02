@@ -20,9 +20,7 @@ class MyApp extends StatelessWidget {
       initialRoute: 'logOrReg',
       routes: {
         '/': (context) => const HomeScreen(),
-        'logOrReg': (context) => const LoginOrRegisterScreen(),
-        'characters': (context) => const CharactersScreen(),
-        'planets': (context) => const PlanetsScreen(),
+        'logOrReg': (context) => const LoginOrRegisterScreen()
       },
     );
   }
