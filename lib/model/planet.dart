@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Planets {
-    List<Item> items;
+    List<PlanetItem> items;
     Meta meta;
     Links links;
 
@@ -16,7 +16,7 @@ class Planets {
     String toJson() => json.encode(toMap());
 
     factory Planets.fromMap(Map<String, dynamic> json) => Planets(
-        items: List<Item>.from(json["items"].map((x) => Item.fromMap(x))),
+        items: List<PlanetItem>.from(json["items"].map((x) => PlanetItem.fromMap(x))),
         meta: Meta.fromMap(json["meta"]),
         links: Links.fromMap(json["links"]),
     );
@@ -28,7 +28,7 @@ class Planets {
     };
 }
 
-class Item {
+class PlanetItem {
     int id;
     String name;
     bool isDestroyed;
@@ -36,7 +36,7 @@ class Item {
     String image;
     dynamic deletedAt;
 
-    Item({
+    PlanetItem({
         required this.id,
         required this.name,
         required this.isDestroyed,
@@ -45,11 +45,11 @@ class Item {
         required this.deletedAt,
     });
 
-    factory Item.fromJson(String str) => Item.fromMap(json.decode(str));
+    factory PlanetItem.fromJson(String str) => PlanetItem.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Item.fromMap(Map<String, dynamic> json) => Item(
+    factory PlanetItem.fromMap(Map<String, dynamic> json) => PlanetItem(
         id: json["id"],
         name: json["name"],
         isDestroyed: json["isDestroyed"],
