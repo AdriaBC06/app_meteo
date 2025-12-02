@@ -1,21 +1,21 @@
 import 'dart:convert';
 
-class Characters {
+class Personaje {
     List<Item> items;
     Meta meta;
     Links links;
 
-    Characters({
+    Personaje({
         required this.items,
         required this.meta,
         required this.links,
     });
 
-    factory Characters.fromJson(String str) => Characters.fromMap(json.decode(str));
+    factory Personaje.fromJson(String str) => Personaje.fromMap(json.decode(str));
 
     String toJson() => json.encode(toMap());
 
-    factory Characters.fromMap(Map<String, dynamic> json) => Characters(
+    factory Personaje.fromMap(Map<String, dynamic> json) => Personaje(
         items: List<Item>.from(json["items"].map((x) => Item.fromMap(x))),
         meta: Meta.fromMap(json["meta"]),
         links: Links.fromMap(json["links"]),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../model/character.dart'; // ajusta la ruta si tu modelo está en otra carpeta
+import '../model/personaje.dart'; // ajusta la ruta si tu modelo está en otra carpeta
 
 class CharactersScreen extends StatelessWidget {
   const CharactersScreen({Key? key}) : super(key: key);
