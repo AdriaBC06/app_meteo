@@ -1,31 +1,30 @@
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
-class NowPlayingResponse {
+class Characters {
     List<Item> items;
     Meta meta;
     Links links;
 
-    NowPlayingResponse({
+    Characters({
         required this.items,
         required this.meta,
         required this.links,
     });
 
-    factory NowPlayingResponse.fromRawJson(String str) => NowPlayingResponse.fromJson(json.decode(str));
+    factory Characters.fromJson(String str) => Characters.fromMap(json.decode(str));
 
-    String toRawJson() => json.encode(toJson());
+    String toJson() => json.encode(toMap());
 
-    factory NowPlayingResponse.fromJson(Map<String, dynamic> json) => NowPlayingResponse(
-        items: List<Item>.from(json["items"].map((x) => Item.fromJson(x))),
-        meta: Meta.fromJson(json["meta"]),
-        links: Links.fromJson(json["links"]),
+    factory Characters.fromMap(Map<String, dynamic> json) => Characters(
+        items: List<Item>.from(json["items"].map((x) => Item.fromMap(x))),
+        meta: Meta.fromMap(json["meta"]),
+        links: Links.fromMap(json["links"]),
     );
 
-    Map<String, dynamic> toJson() => {
-        "items": List<dynamic>.from(items.map((x) => x.toJson())),
-        "meta": meta.toJson(),
-        "links": links.toJson(),
+    Map<String, dynamic> toMap() => {
+        "items": List<dynamic>.from(items.map((x) => x.toMap())),
+        "meta": meta.toMap(),
+        "links": links.toMap(),
     };
 }
 
@@ -54,11 +53,11 @@ class Item {
         required this.deletedAt,
     });
 
-    factory Item.fromRawJson(String str) => Item.fromJson(json.decode(str));
+    factory Item.fromJson(String str) => Item.fromMap(json.decode(str));
 
-    String toRawJson() => json.encode(toJson());
+    String toJson() => json.encode(toMap());
 
-    factory Item.fromJson(Map<String, dynamic> json) => Item(
+    factory Item.fromMap(Map<String, dynamic> json) => Item(
         id: json["id"],
         name: json["name"],
         ki: json["ki"],
@@ -71,7 +70,7 @@ class Item {
         deletedAt: json["deletedAt"],
     );
 
-    Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "ki": ki,
@@ -120,18 +119,18 @@ class Links {
         required this.last,
     });
 
-    factory Links.fromRawJson(String str) => Links.fromJson(json.decode(str));
+    factory Links.fromJson(String str) => Links.fromMap(json.decode(str));
 
-    String toRawJson() => json.encode(toJson());
+    String toJson() => json.encode(toMap());
 
-    factory Links.fromJson(Map<String, dynamic> json) => Links(
+    factory Links.fromMap(Map<String, dynamic> json) => Links(
         first: json["first"],
         previous: json["previous"],
         next: json["next"],
         last: json["last"],
     );
 
-    Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toMap() => {
         "first": first,
         "previous": previous,
         "next": next,
@@ -154,11 +153,11 @@ class Meta {
         required this.currentPage,
     });
 
-    factory Meta.fromRawJson(String str) => Meta.fromJson(json.decode(str));
+    factory Meta.fromJson(String str) => Meta.fromMap(json.decode(str));
 
-    String toRawJson() => json.encode(toJson());
+    String toJson() => json.encode(toMap());
 
-    factory Meta.fromJson(Map<String, dynamic> json) => Meta(
+    factory Meta.fromMap(Map<String, dynamic> json) => Meta(
         totalItems: json["totalItems"],
         itemCount: json["itemCount"],
         itemsPerPage: json["itemsPerPage"],
@@ -166,7 +165,7 @@ class Meta {
         currentPage: json["currentPage"],
     );
 
-    Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toMap() => {
         "totalItems": totalItems,
         "itemCount": itemCount,
         "itemsPerPage": itemsPerPage,
