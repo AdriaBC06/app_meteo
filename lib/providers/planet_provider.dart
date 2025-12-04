@@ -19,7 +19,7 @@ class PlanetsNotifier extends AsyncNotifier<List<PlanetItem>> {
     final api = ref.read(apiServiceProvider);
     final data = await api.get('planets', params: {
       'page': page.toString(),
-      'limit': '20',
+      'limit': '1000',
     });
 
     final response = Planets.fromMap(data);

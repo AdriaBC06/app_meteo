@@ -19,7 +19,7 @@ class CharactersNotifier extends AsyncNotifier<List<Item>> {
     final api = ref.read(apiServiceProvider);
     final data = await api.get('characters', params: {
       'page': page.toString(),
-      'limit': '20',
+      'limit': '1000',
     });
 
     final response = Personaje.fromMap(data);
