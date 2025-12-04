@@ -19,7 +19,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Usamos el argument como nombre de usuario
+    // Nombre de usuario recibido por arguments
     final args = ModalRoute.of(context)?.settings.arguments;
     final String username =
         (args is String && args.isNotEmpty) ? args : 'Usuari';
@@ -89,7 +89,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
 
-            // "Canales" Wii para cambiar de sección
+            // "Canales" Wii para cambiar de sección (con animación)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SizedBox(
@@ -187,6 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   : 'https://placehold.co/256x256?text=DBZ';
 
               return _WiiContentCard(
+                index: index,
                 title: character.name,
                 subtitle:
                     'Ki: ${character.ki} / ${character.maxKi}\n${character.race}',
@@ -243,6 +244,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   planet.image.isNotEmpty ? planet.image : '';
 
               return _WiiContentCard(
+                index: index,
                 title: planet.name,
                 subtitle: 'ID: ${planet.id}',
                 imageUrl: imageUrl,
@@ -285,45 +287,51 @@ class _WiiChannelTile extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          color: baseColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: borderColor,
-            width: selected ? 3 : 1,
-          ),
-          boxShadow: const [
-            BoxShadow(
-              blurRadius: 8,
-              offset: Offset(0, 4),
-              color: Colors.black12,
+      child: AnimatedScale(
+        scale: selected ? 1.05 : 1.0,             // 🔹 zoom al seleccionar
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: baseColor,
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: borderColor,
+              width: selected ? 3 : 1,
             ),
-          ],
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 42),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+            boxShadow: const [
+              BoxShadow(
+                blurRadius: 8,
+                offset: Offset(0, 4),
+                color: Colors.black12,
               ),
-            )
-          ],
+            ],
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 42),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Tarjeta de contenido estilo canal de Wii (imagen grande + texto)
+/// Tarjeta de contenido estilo canal de Wii (imagen grande + texto) con animación
 class _WiiContentCard extends StatelessWidget {
+  final int index;
   final String title;
   final String subtitle;
   final String imageUrl;
@@ -331,6 +339,7 @@ class _WiiContentCard extends StatelessWidget {
 
   const _WiiContentCard({
     Key? key,
+    required this.index,
     required this.title,
     required this.subtitle,
     required this.imageUrl,
@@ -341,77 +350,97 @@ class _WiiContentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasImage = imageUrl.isNotEmpty;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(24),
-        onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
+    // Animación de aparición escalonada según index
+    final int baseDuration = 400;
+    final int extraDelayPerIndex = 60;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(
+        milliseconds: baseDuration + index * extraDelayPerIndex,
+      ),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.scale(
+            scale: 0.9 + 0.1 * value, // de 0.9 a 1.0
+            child: child,
           ),
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              // IMAGEN SIN RECORTAR
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
-                  child: hasImage
-                      ? Center(
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.contain, // 👈 no recorta
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.broken_image,
+        );
+      },
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                // IMAGEN SIN RECORTAR
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: hasImage
+                        ? Center(
+                            child: Image.network(
+                              imageUrl,
+                              fit: BoxFit.contain, // 👈 no recorta
+                              errorBuilder: (_, __, ___) => const Icon(
+                                Icons.broken_image,
+                                size: 60,
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
                               size: 60,
+                              color: Colors.grey,
                             ),
                           ),
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 60,
-                            color: Colors.grey,
-                          ),
-                        ),
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
 
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
 
-              const SizedBox(height: 4),
+                const SizedBox(height: 4),
 
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.black54,
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
